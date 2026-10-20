@@ -9,7 +9,7 @@ export default function App() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
       const sections = ['home', 'products', 'production', 'portfolio', 'tech-library', 'calculator', 'contacts'];
-      for (const section of sections.reverse()) {
+      for (const section of [...sections].reverse()) {
         const el = document.getElementById(section);
         if (el && el.getBoundingClientRect().top <= 100) {
           setActiveSection(section);
@@ -37,6 +37,20 @@ export default function App() {
       el.scrollIntoView({ behavior: 'smooth' });
       setMobileMenuOpen(false);
     }
+  };
+
+  // Images
+  const images = {
+    hero: 'https://image.qwenlm.ai/generated-images/9487e42d-4d34-4227-bc7c-2b0bcdea0f44/_result.png',
+    office: 'https://image.qwenlm.ai/generated-images/643d4e52-4606-4aef-a827-43c9dd6463ba/_result.png',
+    sliding: 'https://image.qwenlm.ai/generated-images/9d7bf561-9907-438f-907f-1cbe59bd98fc/_result.png',
+    shower: 'https://image.qwenlm.ai/generated-images/928ed75c-3be4-4fb0-aa57-0217341c96bc/_result.png',
+    commercial: 'https://image.qwenlm.ai/generated-images/b0227355-9a92-45b5-bd5a-d990a217603c/_result.png',
+    interior: 'https://image.qwenlm.ai/generated-images/2948ddcd-5335-4a51-a7d2-75b6fe4f7be2/_result.png',
+    production: 'https://image.qwenlm.ai/generated-images/c3a1ecf4-3150-4fb7-a58b-38a2ab8d5f32/_result.png',
+    portfolio1: 'https://image.qwenlm.ai/generated-images/14de910b-0c92-4083-ae98-1ae9f1466328/_result.png',
+    portfolio2: 'https://image.qwenlm.ai/generated-images/014fb97d-b6ce-421c-837a-5c2defdc3c4e/_result.png',
+    portfolio3: 'https://image.qwenlm.ai/generated-images/57a96c46-7ae9-4f71-8418-c149d8e9ecf0/_result.png',
   };
 
   return (
@@ -110,19 +124,24 @@ export default function App() {
 
       {/* Hero Section */}
       <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={images.hero}
+            alt="METALINE — перегородки из алюминиевого профиля"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-900/70 to-gray-900/85"></div>
         </div>
-        {/* Decorative grid */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-          backgroundSize: '60px 60px'
-        }}></div>
         
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+        </div>
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-400/10 border border-amber-400/20 mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-400/10 border border-amber-400/20 mb-8 backdrop-blur-sm">
             <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
             <span className="text-amber-400 text-sm font-medium">Фабрика перегородок</span>
           </div>
@@ -137,7 +156,7 @@ export default function App() {
             </span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-10">
+          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mb-10">
             Проектируем и производим стеклянные перегородки с алюминиевым каркасом для офисов, 
             торговых центров и жилых помещений. Закалённое стекло, точные инженерные решения, 
             безупречный монтаж.
@@ -152,7 +171,7 @@ export default function App() {
             </button>
             <button
               onClick={() => scrollTo('portfolio')}
-              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all"
+              className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 backdrop-blur-sm transition-all"
             >
               Смотреть проекты
             </button>
@@ -168,7 +187,7 @@ export default function App() {
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="text-2xl sm:text-3xl font-black text-amber-400">{stat.value}</div>
-                <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+                <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -191,54 +210,64 @@ export default function App() {
               {
                 title: 'Офисные перегородки',
                 desc: 'Стационарные системы для зонирования офисного пространства. Алюминиевый каркас с одинарным или двойным остеклением.',
-                icon: '🏢',
+                image: images.office,
                 features: ['Высота до 4 м', 'Звукоизоляция 42 дБ', 'Интеграция дверей']
               },
               {
                 title: 'Раздвижные перегородки',
                 desc: 'Трансформируемые системы для гибкого зонирования. Механизмы скрытого монтажа с плавным ходом.',
-                icon: '🔄',
+                image: images.sliding,
                 features: ['Бесшумный ход', 'Автоматика', 'Ширина до 6 м']
               },
               {
                 title: 'Душевые перегородки',
                 desc: 'Системы для ванных комнат из закалённого стекла 8-10 мм с фурнитурой из нержавеющей стали.',
-                icon: '🚿',
+                image: images.shower,
                 features: ['Закалённое стекло 8-10 мм', 'Антикапля покрытие', 'Любые размеры']
               },
               {
                 title: 'Торговые перегородки',
                 desc: 'Витражные системы для торговых центров и магазинов. Максимальная прозрачность при прочности.',
-                icon: '🏬',
+                image: images.commercial,
                 features: ['Витринное остекление', 'Противоударное стекло', 'Быстрый монтаж']
               },
               {
                 title: 'Интерьерные перегородки',
                 desc: 'Декоративные системы для жилых помещений. Комбинация стекла, металла и дерева.',
-                icon: '🏠',
+                image: images.interior,
                 features: ['Дизайнерские решения', 'Тонированное стекло', 'Лофт-стиль']
               },
               {
                 title: 'Противопожарные',
                 desc: 'Сертифицированные огнестойкие перегородки с пределом устойчивости до 60 минут.',
-                icon: '🔥',
+                image: images.office,
                 features: ['EI 30-60', 'Сертификация', 'Остекление до 40%']
               },
             ].map((product, i) => (
-              <div key={i} className="group p-6 rounded-2xl bg-gray-900 border border-gray-800 hover:border-amber-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-400/5">
-                <div className="text-4xl mb-4">{product.icon}</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-amber-400 transition-colors">{product.title}</h3>
-                <p className="text-gray-400 text-sm mb-4">{product.desc}</p>
-                <ul className="space-y-2">
-                  {product.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm text-gray-500">
-                      <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+              <div key={i} className="group rounded-2xl bg-gray-900 border border-gray-800 hover:border-amber-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-amber-400/5 overflow-hidden">
+                {/* Product Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent"></div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-amber-400 transition-colors">{product.title}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{product.desc}</p>
+                  <ul className="space-y-2">
+                    {product.features.map((f, j) => (
+                      <li key={j} className="flex items-center gap-2 text-sm text-gray-500">
+                        <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
           </div>
@@ -256,6 +285,20 @@ export default function App() {
             </p>
           </div>
 
+          {/* Production Image */}
+          <div className="relative rounded-2xl overflow-hidden mb-16 h-64 md:h-96">
+            <img
+              src={images.production}
+              alt="Производство METALINE"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-900/40 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 p-8">
+              <h3 className="text-2xl md:text-3xl font-black">Собственное производство</h3>
+              <p className="text-gray-300 mt-2">3000 м² производственных площадей</p>
+            </div>
+          </div>
+
           {/* Process Steps */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {[
@@ -264,7 +307,7 @@ export default function App() {
               { step: '03', title: 'Контроль качества', desc: 'Многоступенчатая проверка на каждом этапе' },
               { step: '04', title: 'Монтаж', desc: 'Профессиональная установка с гарантией 5 лет' },
             ].map((item, i) => (
-              <div key={i} className="relative p-6 rounded-2xl bg-gray-800/50 border border-gray-700/50">
+              <div key={i} className="relative p-6 rounded-2xl bg-gray-800/50 border border-gray-700/50 hover:border-amber-400/20 transition-all">
                 <div className="text-5xl font-black text-amber-400/20 mb-2">{item.step}</div>
                 <h3 className="text-lg font-bold mb-2">{item.title}</h3>
                 <p className="text-gray-400 text-sm">{item.desc}</p>
@@ -327,29 +370,29 @@ export default function App() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: 'Бизнес-центр "Меридиан"', type: 'Офисные перегородки', area: '1 200 м²', color: 'from-blue-900/40 to-gray-900' },
-              { title: 'ТЦ "Галерея"', type: 'Торговые витражи', area: '800 м²', color: 'from-amber-900/40 to-gray-900' },
-              { title: 'ЖК "Панорама"', type: 'Интерьерные перегородки', area: '450 м²', color: 'from-purple-900/40 to-gray-900' },
-              { title: 'Клиника "МедЛайф"', type: 'Зонирование помещений', area: '600 м²', color: 'from-green-900/40 to-gray-900' },
-              { title: 'Отель "Ривьера"', type: 'Душевые перегородки', area: '320 м²', color: 'from-cyan-900/40 to-gray-900' },
-              { title: 'Коворкинг "Точка"', type: 'Раздвижные системы', area: '280 м²', color: 'from-rose-900/40 to-gray-900' },
+              { title: 'Бизнес-центр "Меридиан"', type: 'Офисные перегородки', area: '1 200 м²', image: images.portfolio1 },
+              { title: 'ТЦ "Галерея"', type: 'Торговые витражи', area: '800 м²', image: images.commercial },
+              { title: 'ЖК "Панорама"', type: 'Интерьерные перегородки', area: '450 м²', image: images.interior },
+              { title: 'Клиника "МедЛайф"', type: 'Зонирование помещений', area: '600 м²', image: images.office },
+              { title: 'Отель "Ривьера"', type: 'Душевые перегородки', area: '320 м²', image: images.portfolio2 },
+              { title: 'Коворкинг "Точка"', type: 'Раздвижные системы', area: '280 м²', image: images.portfolio3 },
             ].map((project, i) => (
               <div key={i} className="group relative overflow-hidden rounded-2xl cursor-pointer">
-                <div className={`aspect-[4/3] bg-gradient-to-br ${project.color} flex items-center justify-center`}>
-                  <div className="text-center p-6">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                      <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-bold text-white">{project.title}</h3>
-                    <p className="text-white/60 text-sm mt-1">{project.type}</p>
-                  </div>
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <div>
-                    <p className="text-amber-400 font-bold">{project.area}</p>
-                    <p className="text-white/80 text-sm">{project.type}</p>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-lg font-bold text-white">{project.title}</h3>
+                  <p className="text-white/60 text-sm mt-1">{project.type}</p>
+                  <div className="mt-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                    <span className="text-amber-400 font-bold">{project.area}</span>
                   </div>
                 </div>
               </div>
@@ -401,8 +444,18 @@ export default function App() {
       </section>
 
       {/* Calculator / Request Section */}
-      <section id="calculator" className="py-20 md:py-32 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="calculator" className="py-20 md:py-32 bg-gray-950 relative overflow-hidden">
+        {/* Background image */}
+        <div className="absolute inset-0 opacity-10">
+          <img
+            src={images.hero}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-950 via-gray-950/95 to-gray-950"></div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-amber-400 text-sm font-semibold tracking-wider uppercase">Расчёт</span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mt-3">Заявка на расчёт</h2>
@@ -412,7 +465,7 @@ export default function App() {
           </div>
 
           <div className="max-w-3xl mx-auto">
-            <form className="p-8 rounded-2xl bg-gray-900 border border-gray-800" onSubmit={(e) => { e.preventDefault(); alert('Заявка отправлена! Мы свяжемся с вами в ближайшее время.'); }}>
+            <form className="p-8 rounded-2xl bg-gray-900/80 backdrop-blur-md border border-gray-800" onSubmit={(e) => { e.preventDefault(); alert('Заявка отправлена! Мы свяжемся с вами в ближайшее время.'); }}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Ваше имя *</label>
