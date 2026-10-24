@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import type { Product, PortfolioItem, Request, Document, SiteSettings, User, Notification } from './types';
 import { store, GOLD, images } from './store';
-import { AdminIcons, StatsCard, Button, Modal, Input, Textarea, Select, Badge } from './components';
+import { AdminIcons, StatsCard, Button, Modal, Input, Textarea, Select, Badge, ImageUploader } from './components';
 
 // ==================== DASHBOARD ====================
 export function Dashboard({ onNavigate, showToast }: { onNavigate: (p: any) => void; showToast: (n: Omit<Notification, 'id' | 'timestamp'>) => void }) {
@@ -288,16 +288,13 @@ function ProductForm({ initial, onSave, onCancel }: { initial: Product | null; o
           <input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: parseFloat(e.target.value) })} className="premium-input w-full px-4 py-2.5 rounded-lg text-white outline-none" />
         </div>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Изображение</label>
-        <div className="grid grid-cols-5 gap-2">
-          {Object.values(images).map((img, i) => (
-            <button key={i} type="button" onClick={() => setForm({ ...form, image: img })} className="aspect-square rounded-lg overflow-hidden border-2 transition-all" style={{ borderColor: form.image === img ? GOLD.light : 'transparent' }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </button>
-          ))}
-        </div>
-      </div>
+      <ImageUploader
+        label="Изображение продукта"
+        value={form.image}
+        onChange={(image) => setForm({ ...form, image })}
+        gallery={Object.values(images)}
+        aspectRatio="square"
+      />
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">Особенности</label>
         <div className="space-y-2">
@@ -433,16 +430,13 @@ function PortfolioForm({ initial, onSave, onCancel }: { initial: PortfolioItem |
         </div>
       </div>
       <Textarea label="Описание" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Изображение</label>
-        <div className="grid grid-cols-5 gap-2">
-          {Object.values(images).map((img, i) => (
-            <button key={i} type="button" onClick={() => setForm({ ...form, image: img })} className="aspect-video rounded-lg overflow-hidden border-2 transition-all" style={{ borderColor: form.image === img ? GOLD.light : 'transparent' }}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </button>
-          ))}
-        </div>
-      </div>
+      <ImageUploader
+        label="Изображение проекта"
+        value={form.image}
+        onChange={(image) => setForm({ ...form, image })}
+        gallery={Object.values(images)}
+        aspectRatio="video"
+      />
       <Select label="Статус" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
         <option value="published">Опубликовано</option>
         <option value="draft">Черновик</option>

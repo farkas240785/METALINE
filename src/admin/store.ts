@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   documents: 'metaline_documents',
   settings: 'metaline_settings',
   users: 'metaline_users',
+  uploadedImages: 'metaline_uploaded_images',
 };
 
 const GOLD = {
@@ -160,6 +161,21 @@ export const store = {
   // Users
   getUsers: (): User[] => loadFromStorage(STORAGE_KEYS.users, initialUsers),
   saveUsers: (data: User[]) => saveToStorage(STORAGE_KEYS.users, data),
+  
+  // Uploaded Images
+  getUploadedImages: (): string[] => loadFromStorage<string[]>(STORAGE_KEYS.uploadedImages, []),
+  saveUploadedImage: (imageData: string) => {
+    const images = loadFromStorage<string[]>(STORAGE_KEYS.uploadedImages, []);
+    images.unshift(imageData); // Добавляем в начало
+    // Ограничиваем до 20 изображений
+    if (images.length > 20) images.pop();
+    saveToStorage<string[]>(STORAGE_KEYS.uploadedImages, images);
+  },
+  removeUploadedImage: (imageData: string) => {
+    const images = loadFromStorage<string[]>(STORAGE_KEYS.uploadedImages, []);
+    const filtered = images.filter(img => img !== imageData);
+    saveToStorage<string[]>(STORAGE_KEYS.uploadedImages, filtered);
+  },
   
   // Reset
   resetAll: () => {

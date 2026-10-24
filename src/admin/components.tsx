@@ -1,5 +1,5 @@
 // Общие UI компоненты админ-панели
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { PageKey, Notification } from './types';
 import { GOLD } from './store';
 
@@ -132,6 +132,22 @@ export const AdminIcons = {
   Star: ({ filled = false, className = "w-5 h-5" }: { filled?: boolean; className?: string }) => (
     <svg className={className} fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth={filled ? 0 : 1.5} viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+    </svg>
+  ),
+  Upload: ({ className = "w-5 h-5" }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" x2="12" y1="3" y2="15" />
+    </svg>
+  ),
+  ImagePlus: ({ className = "w-5 h-5" }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="9" cy="9" r="2" />
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+      <path d="M16 14v6" />
+      <path d="M13 17h6" />
     </svg>
   ),
 };
@@ -490,5 +506,190 @@ export function Badge({ children, variant = 'default' }: { children: React.React
     <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border" style={{ backgroundColor: v.bg, color: v.color, borderColor: v.border }}>
       {children}
     </span>
+  );
+}
+
+// ==================== IMAGE UPLOADER ====================
+import { store } from './store';
+
+interface ImageUploaderProps {
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  gallery?: string[];
+  aspectRatio?: 'square' | 'video' | 'wide';
+}
+
+export function ImageUploader({ label, value, onChange, gallery = [], aspectRatio = 'video' }: ImageUploaderProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState('');
+  const [uploadedImages, setUploadedImages] = useState<string[]>(store.getUploadedImages());
+
+  const handleFile = (file: File) => {
+    setError('');
+    
+    // Проверка типа файла
+    if (!file.type.startsWith('image/')) {
+      setError('Пожалуйста, выберите изображение');
+      return;
+    }
+
+    // Проверка размера (максимум 2 МБ для localStorage)
+    const maxSize = 2 * 1024 * 1024; // 2 МБ
+    if (file.size > maxSize) {
+      setError('Размер изображения не должен превышать 2 МБ');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      // Сохраняем в store
+      store.saveUploadedImage(result);
+      setUploadedImages(store.getUploadedImages());
+      onChange(result);
+    };
+    reader.onerror = () => {
+      setError('Ошибка при чтении файла');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  const aspectClasses = {
+    square: 'aspect-square',
+    video: 'aspect-video',
+    wide: 'aspect-[16/9]',
+  };
+
+  return (
+    <div>
+      {label && <label className="block text-sm font-medium text-gray-300 mb-2 tracking-wide">{label}</label>}
+      
+      {/* Превью изображения */}
+      {value && (
+        <div className="mb-3 relative group">
+          <div className={`${aspectClasses[aspectRatio]} rounded-lg overflow-hidden border-2`}>
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/70 hover:bg-red-500/90 text-white opacity-0 group-hover:opacity-100 transition-all"
+          >
+            <AdminIcons.X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Зона загрузки */}
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={`relative border-2 border-dashed rounded-lg transition-all cursor-pointer ${aspectClasses[aspectRatio]} flex items-center justify-center ${
+          isDragging
+            ? 'border-[#d4af37] bg-[#d4af37]/5'
+            : 'border-[#c9a227]/30 hover:border-[#d4af37]/50 bg-[#0a0a0a]'
+        }`}
+      >
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleInputChange}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        />
+        <div className="text-center p-4">
+          <AdminIcons.ImagePlus className="w-10 h-10 mx-auto mb-2 text-gray-500" />
+          <p className="text-sm text-gray-400 mb-1">
+            {isDragging ? 'Отпустите файл' : 'Перетащите изображение сюда'}
+          </p>
+          <p className="text-xs text-gray-600">или нажмите для выбора файла</p>
+          <p className="text-xs text-gray-600 mt-2">PNG, JPG, WEBP до 2 МБ</p>
+        </div>
+      </div>
+
+      {/* Ошибка */}
+      {error && (
+        <p className="mt-2 text-sm text-red-400">{error}</p>
+      )}
+
+      {/* Галерея */}
+      {(gallery.length > 0 || uploadedImages.length > 0) && (
+        <div className="mt-4">
+          {uploadedImages.length > 0 && (
+            <>
+              <p className="text-xs text-gray-500 mb-2">Загруженные изображения:</p>
+              <div className="grid grid-cols-5 gap-2 mb-4">
+                {uploadedImages.map((img, i) => (
+                  <div key={i} className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => onChange(img)}
+                      className={`${aspectClasses[aspectRatio]} w-full rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                        value === img ? 'border-[#d4af37] ring-2 ring-[#d4af37]/30' : 'border-transparent'
+                      }`}
+                    >
+                      <img src={img} alt={`Uploaded ${i + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        store.removeUploadedImage(img);
+                        setUploadedImages(store.getUploadedImages());
+                        if (value === img) onChange('');
+                      }}
+                      className="absolute top-1 right-1 p-1 rounded bg-black/70 hover:bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      <AdminIcons.X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          
+          {gallery.length > 0 && (
+            <>
+              <p className="text-xs text-gray-500 mb-2">Предустановленные изображения:</p>
+              <div className="grid grid-cols-5 gap-2">
+                {gallery.map((img, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => onChange(img)}
+                    className={`${aspectClasses[aspectRatio]} rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                      value === img ? 'border-[#d4af37] ring-2 ring-[#d4af37]/30' : 'border-transparent'
+                    }`}
+                  >
+                    <img src={img} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
