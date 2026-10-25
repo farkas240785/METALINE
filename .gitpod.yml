@@ -1,0 +1,30 @@
+# Gitpod configuration for METALINE Website
+# https://www.gitpod.io/
+
+tasks:
+  - init: npm install
+    command: npm run dev
+
+ports:
+  - port: 5173
+    onOpen: open-preview
+    visibility: public
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - bradlc.vscode-tailwindcss
+    - dsznajder.es7-react-js-snippets
+    - formulahendry.auto-rename-tag
+    - christian-kohler.path-intellisense
+
+github:
+  prebuilds:
+    master: true
+    branches: true
+    pullRequests: true
+    pullRequestsFromForks: true
+    addCheck: true
+    addComment: true
+    addBadge: true
